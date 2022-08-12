@@ -1,12 +1,27 @@
 import { useState } from 'react';
+import { css } from '@emotion/react';
+import styled from '@emotion/styled';
+
 import reactLogo from './assets/react.svg';
 import './App.css';
+
+const style = css`
+  color: #3badeb;
+  background-color: #1ddb39;
+`;
+
+const Button = styled.button`
+  color: #f5f0f0;
+  background-color: #f54242;
+`;
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <div className="App">
+      <div css={style}>Some hotpink text.</div>
+      <Button>This is a hotpink button.</Button>
       <div>
         <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
           <img src="/vite.svg" className="logo" alt="Vite logo" />
