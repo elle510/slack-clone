@@ -1,7 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from 'msw';
 
-// eslint-disable-next-line import/prefer-default-export
 export const handlers = [
   rest.post('/login', (req, res, ctx) => {
     // Persist user's authentication in the session

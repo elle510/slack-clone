@@ -5,28 +5,23 @@
   },
   "extends": [
     "plugin:react/recommended",
-    "airbnb",
+    "standard-with-typescript",
     "plugin:prettier/recommended"
   ],
-  "parser": "@typescript-eslint/parser",
+  "overrides": [
+  ],
   "parserOptions": {
-    "ecmaFeatures": {
-      "jsx": true
-    },
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
   "plugins": [
-    "react",
-    "@typescript-eslint"
+    "react"
   ],
   "rules": {
-    "react/react-in-jsx-scope": "off",
-    "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }],
-    "import/extensions": "off",
-    "import/no-unresolved": "off"
-  },
-  "globals": {
-    "React": "writable"
+    // "max-len": [
+    //   "error",
+    //   5
+    // ],
+    // "no-console": ["error", { "allow": ["warn", "error"] }]
   }
 }
