@@ -18,7 +18,7 @@ export const handlers = [
     // Check if the user is authenticated in this session
     const isAuthenticated = sessionStorage.getItem('is-authenticated');
 
-    if (!isAuthenticated) {
+    if (isAuthenticated !== null && isAuthenticated !== '') {
       // If not authenticated, respond with a 403 error
       return res(
         ctx.status(403),

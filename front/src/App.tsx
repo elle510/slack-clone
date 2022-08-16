@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { css } from '@emotion/react';
 import styled from '@emotion/styled';
 
@@ -15,14 +15,14 @@ const Button = styled.button`
   background-color: #f54242;
 `;
 
-function App() {
+function App(): React.ReactElement {
   const [count, setCount] = useState(0);
 
   const onReqLogin = useCallback(() => {
     fetch('/login', { method: 'POST' })
-      .then((response) => {
+      .then(async (response) => {
         // console.log(response.json());
-        return response.json();
+        return await response.json();
       })
       .then((data) => console.log('data', data))
       .catch((error) => console.error('에러', error));
@@ -30,9 +30,9 @@ function App() {
 
   const onReqUser = useCallback(() => {
     fetch('/user')
-      .then((response) => {
+      .then(async (response) => {
         // console.log(response.json());
-        return response.json();
+        return await response.json();
       })
       .then((data) => console.log(data))
       .catch((error) => console.error('에러', error));
