@@ -56,7 +56,6 @@ export const LogOutButton = styled.button`
   padding: 5px 20px 5px;
   outline: none;
   cursor: pointer;
-  color: #000000;
 `;
 
 export const WorkspaceWrapper = styled.div`

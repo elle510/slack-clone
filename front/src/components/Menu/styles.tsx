@@ -31,5 +31,4 @@ export const CloseModalButton = styled.button`
   border: none;
   font-size: 30px;
   cursor: pointer;
-  color: #000000;
 `;

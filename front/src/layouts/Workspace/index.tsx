@@ -143,7 +143,7 @@ const Workspace: React.FC = () => {
   return (
     <div
       css={css`
-        width: 100vw;
+        // width: 100vw;
       `}
     >
       <Header>
