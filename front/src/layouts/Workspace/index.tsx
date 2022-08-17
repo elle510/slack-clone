@@ -67,7 +67,7 @@ const Workspace: React.FC = () => {
         console.dir(error);
         toast.error(error.response?.data, { position: 'bottom-center' });
       });
-  }, []);
+  }, [revalidateUser]);
 
   const onCreateWorkspace = useCallback(
     (e: any) => {
@@ -94,7 +94,7 @@ const Workspace: React.FC = () => {
           toast.error(error.response?.data, { position: 'bottom-center' });
         });
     },
-    [newWorkspace, newUrl],
+    [newWorkspace, newUrl, revalidateUser, setNewWorkspace, setNewUrl],
   );
 
   const onClickCreateWorkspace = useCallback(() => {
