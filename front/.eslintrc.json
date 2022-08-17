@@ -19,7 +19,9 @@
     "react"
   ],
   "rules": {
-    "react/react-in-jsx-scope": "off"
-    // "react/jsx-filename-extension": ["error", { "extensions": [".jsx", ".tsx"] }]
+    // "react/react-in-jsx-scope": "off",
+    // "@typescript-eslint/no-floating-promises": ["error", { "ignoreVoid": true, "ignoreIIFE": true  }]
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off"
   }
 }
