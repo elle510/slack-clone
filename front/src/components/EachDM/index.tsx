@@ -1,3 +1,5 @@
+import gravatar from 'gravatar';
+
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import React, { useEffect } from 'react';
@@ -34,7 +36,7 @@ const EachDM: React.VFC<Props> = ({ member, isOnline }) => {
       activeClassName="selected"
       to={`/workspace/${workspace ?? ''}/dm/${member.id}`}
     >
-      <i
+      {/* <i
         className={`c-icon p-channel_sidebar__presence_icon p-channel_sidebar__presence_icon--dim_enabled c-presence ${
           isOnline ? 'c-presence--active c-icon--presence-online' : 'c-icon--presence-offline'
         }`}
@@ -43,6 +45,11 @@ const EachDM: React.VFC<Props> = ({ member, isOnline }) => {
         data-qa-presence-self="false"
         data-qa-presence-active="false"
         data-qa-presence-dnd="false"
+      /> */}
+      <img
+        src={gravatar.url(userData?.email ?? 'default@estsecurity.com', { s: '28px', d: 'retro' })}
+        alt={userData?.nickname}
+        style={{ marginRight: 5 }}
       />
       <span className={count && count > 0 ? 'bold' : undefined}>{member.nickname}</span>
       {member.id === userData?.id && <span> (나)</span>}
