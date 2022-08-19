@@ -7,15 +7,15 @@ import InviteWorkspaceModal from '@components/InviteWorkspaceModal';
 import Menu from '@components/Menu';
 import Modal from '@components/Modal';
 import useInput from '@hooks/useInput';
-// import useSocket from '@hooks/useSocket';
+import useSocket from '@hooks/useSocket';
 import Channel from '@pages/Channel';
 import DirectMessage from '@pages/DirectMessage';
 import { Button, Input, Label } from '@pages/SignUp/styles';
-import { /* IChannel, */ IUser } from '@typings/db';
+import { IChannel, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import gravatar from 'gravatar';
-import React, { useCallback, /* useEffect, */ useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
@@ -43,12 +43,12 @@ const Workspace: React.FC = () => {
   const params = useParams<{ workspace?: string }>();
   // console.log('params', params, 'location', location, 'routeMatch', routeMatch, 'history', history);
   const { workspace } = params;
-  // const [socket, disconnectSocket] = useSocket(workspace);
+  const [socket, disconnectSocket] = useSocket(workspace);
   const { data: userData, mutate: revalidateUser } = useSWR<IUser | false>('/api/users', fetcher);
-  // const { data: channelData } = useSWR<IChannel[]>(
-  //   userData ? `/api/workspaces/${workspace ?? ''}/channels` : null,
-  //   fetcher,
-  // );
+  const { data: channelData } = useSWR<IChannel[]>(
+    userData ? `/api/workspaces/${workspace ?? ''}/channels` : null,
+    fetcher,
+  );
   const [showCreateWorkspaceModal, setShowCreateWorkspaceModal] = useState(false);
   const [showInviteWorkspaceModal, setShowInviteWorkspaceModal] = useState(false);
   const [showCreateChannelModal, setShowCreateChannelModal] = useState(false);
@@ -123,18 +123,19 @@ const Workspace: React.FC = () => {
     setShowWorkspaceModal((prev) => !prev);
   }, []);
 
-  // useEffect(() => {
-  //   return () => {
-  //     console.info('disconnect socket', workspace);
-  //     disconnectSocket();
-  //   };
-  // }, [disconnectSocket, workspace]);
-  // useEffect(() => {
-  //   if (channelData && userData) {
-  //     console.info('로그인하자', socket);
-  //     socket?.emit('login', { id: userData?.id, channels: channelData.map((v) => v.id) });
-  //   }
-  // }, [socket, userData, channelData]);
+  useEffect(() => {
+    return () => {
+      console.info('disconnect socket', workspace);
+      disconnectSocket();
+    };
+  }, [disconnectSocket, workspace]);
+
+  useEffect(() => {
+    if (channelData && userData) {
+      console.info('로그인하자', socket);
+      socket?.emit('login', { id: userData?.id, channels: channelData.map((v) => v.id) });
+    }
+  }, [socket, userData, channelData]);
 
   if (userData === false) {
     return <Redirect to="/login" />;

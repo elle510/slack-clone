@@ -2,7 +2,7 @@ import ChatBox from '@components/ChatBox';
 import ChatList from '@components/ChatList';
 import InviteChannelModal from '@components/InviteChannelModal';
 import useInput from '@hooks/useInput';
-// import useSocket from '@hooks/useSocket';
+import useSocket from '@hooks/useSocket';
 import { Header, Container, DragOver } from '@pages/Channel/styles';
 import { IChannel, IChat, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
@@ -139,6 +139,13 @@ const Channel: React.FC = () => {
   //     socket?.off('message', onMessage);
   //   };
   // }, [socket, onMessage]);
+  const [socket, disconnect] = useSocket(workspace);
+  useEffect(() => {
+    socket?.on('message', () => {});
+    socket?.emit('hello');
+
+    disconnect();
+  }, [disconnect, socket]);
 
   useEffect(() => {
     localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
