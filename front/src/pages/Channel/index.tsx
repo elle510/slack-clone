@@ -12,14 +12,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useParams } from 'react-router';
 import { Redirect } from 'react-router-dom';
-// import { toast, ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import useSWR from 'swr';
 import useSWRInfinite from 'swr/infinite';
 
 const PAGE_SIZE = 20;
 const Channel: React.FC = () => {
   const { workspace, channel } = useParams<{ workspace: string; channel: string }>();
-  // const [socket] = useSocket(workspace);
+  const [socket] = useSocket(workspace);
   const { data: userData } = useSWR<IUser>('/api/users', fetcher);
   const { data: channelsData } = useSWR<IChannel[]>(
     `/api/workspaces/${workspace}/channels`,
@@ -96,56 +96,58 @@ const Channel: React.FC = () => {
     [chat, workspace, channel, channelData, userData, chatData, mutateChat, setChat],
   );
 
-  // const onMessage = useCallback(
-  //   (data: IChat) => {
-  //     if (
-  //       data.Channel.name === channel &&
-  //       (data.content.startsWith('uploads\\') ||
-  //         data.content.startsWith('uploads/') ||
-  //         data.UserId !== userData?.id)
-  //     ) {
-  //       mutateChat((chatData) => {
-  //         chatData?.[0].unshift(data);
-  //         return chatData;
-  //       }, false).then(() => {
-  //         if (scrollbarRef.current) {
-  //           if (
-  //             scrollbarRef.current.getScrollHeight() <
-  //             // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-  //             scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
-  //           ) {
-  //             console.log('scrollToBottom!', scrollbarRef.current?.getValues());
-  //             setTimeout(() => {
-  //               scrollbarRef.current?.scrollToBottom();
-  //             }, 100);
-  //           } else {
-  //             toast.success('새 메시지가 도착했습니다.', {
-  //               onClick() {
-  //                 scrollbarRef.current?.scrollToBottom();
-  //               },
-  //               closeOnClick: true,
-  //             });
-  //           }
-  //         }
-  //       });
-  //     }
-  //   },
-  //   [channel, userData, mutateChat],
-  // );
+  const onMessage = useCallback(
+    (data: IChat) => {
+      if (
+        data.Channel.name === channel &&
+        (data.content.startsWith('uploads\\') ||
+          data.content.startsWith('uploads/') ||
+          data.UserId !== userData?.id)
+      ) {
+        mutateChat((chatData) => {
+          chatData?.[0].unshift(data);
+          return chatData;
+        }, false).then(() => {
+          if (scrollbarRef.current) {
+            if (
+              scrollbarRef.current.getScrollHeight() <
+              // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+              scrollbarRef.current.getClientHeight() + scrollbarRef.current.getScrollTop() + 150
+            ) {
+              console.log('scrollToBottom!', scrollbarRef.current?.getValues());
+              setTimeout(() => {
+                scrollbarRef.current?.scrollToBottom();
+              }, 100);
+            } else {
+              toast.success('새 메시지가 도착했습니다.', {
+                onClick() {
+                  scrollbarRef.current?.scrollToBottom();
+                },
+                closeOnClick: true,
+              });
+            }
+          }
+        });
+      }
+    },
+    [channel, userData, mutateChat],
+  );
 
-  // useEffect(() => {
-  //   socket?.on('message', onMessage);
-  //   return () => {
-  //     socket?.off('message', onMessage);
-  //   };
-  // }, [socket, onMessage]);
-  const [socket, disconnect] = useSocket(workspace);
   useEffect(() => {
-    socket?.on('message', () => {});
-    socket?.emit('hello');
+    socket?.on('message', onMessage);
+    return () => {
+      socket?.off('message', onMessage);
+    };
+  }, [socket, onMessage]);
 
-    disconnect();
-  }, [disconnect, socket]);
+  // socket 사용 샘플
+  // const [socket, disconnect] = useSocket(workspace);
+  // useEffect(() => {
+  //   socket?.on('message', () => {});
+  //   socket?.emit('hello');
+
+  //   disconnect();
+  // }, [disconnect, socket]);
 
   useEffect(() => {
     localStorage.setItem(`${workspace}-${channel}`, new Date().getTime().toString());
@@ -256,7 +258,7 @@ const Channel: React.FC = () => {
         onCloseModal={onCloseModal}
         setShowInviteChannelModal={setShowInviteChannelModal}
       />
-      {/* <ToastContainer position="bottom-center" /> */}
+      <ToastContainer position="bottom-center" />
       {dragOver && <DragOver>업로드!</DragOver>}
     </Container>
   );
