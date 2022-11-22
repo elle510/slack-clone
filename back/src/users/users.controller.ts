@@ -5,6 +5,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { User } from 'src/common/decorators/user.decorator';
 import { UserDto } from 'src/common/dto/user.dto';
 import { JoinRequestDto } from './dto/join.request.dto';
 import { UsersService } from './users.service';
@@ -18,8 +19,8 @@ export class UsersController {
   @ApiResponse({ status: 500, description: '서버 에러' })
   @ApiOperation({ summary: '내 정보 조회' })
   @Get()
-  getUsers(@Req() req) {
-    return req.user;
+  getUsers(@User() user) {
+    return user;
   }
 
   @ApiOperation({ summary: '회원가입' })
