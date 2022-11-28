@@ -17,7 +17,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  const PORT = process.env.PORT || 3000; // 3000 nestjs 기본 포트
+  await app.listen(PORT);
+  console.log(`server listening on port ${PORT}`);
 
   if (module.hot) {
     module.hot.accept();
