@@ -9,7 +9,15 @@ import { UsersModule } from './users/users.module';
 import { WorkspacesModule } from './workspaces/workspaces.module';
 import { ChannelsModule } from './channels/channels.module';
 import { DmsModule } from './dms/dms.module';
+// import { Users } from './entities/Users';
+import { ChannelChats } from './entities/ChannelChats';
+import { ChannelMembers } from './entities/ChannelMembers';
+import { Channels } from './entities/Channels';
+import { DMs } from './entities/DMs';
+import { Mentions } from './entities/Mentions';
 import { Users } from './entities/Users';
+import { WorkspaceMembers } from './entities/WorkspaceMembers';
+import { Workspaces } from './entities/Workspaces';
 
 @Module({
   imports: [
@@ -23,9 +31,18 @@ import { Users } from './entities/Users';
       host: 'localhost',
       port: 3306,
       username: process.env.DB_USERNAME, // 'root',
-      password: process.env.DB_PASSWORD, // 'root',
-      database: process.env.DB_DATABASE, // 'test',
-      entities: [],
+      password: process.env.DB_PASSWORD, // 'test1234',
+      database: process.env.DB_DATABASE, // 'slack_clone',
+      entities: [
+        ChannelChats,
+        ChannelMembers,
+        Channels,
+        DMs,
+        Mentions,
+        Users,
+        WorkspaceMembers,
+        Workspaces,
+      ],
       // entities: ['entities/*.ts'],
       // autoLoadEntities: true,
       synchronize: false,
