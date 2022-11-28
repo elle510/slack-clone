@@ -21,7 +21,7 @@ import { UsersService } from './users.service';
 
 @UseInterceptors(UndefinedToNullInterceptor)
 @ApiTags('USER')
-@Controller('users')
+@Controller('api/users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -35,8 +35,8 @@ export class UsersController {
 
   @ApiOperation({ summary: '회원가입' })
   @Post()
-  postUsers(@Body() data: JoinRequestDto) {
-    this.usersService.postUsers(data.email, data.nickname, data.password);
+  join(@Body() data: JoinRequestDto) {
+    this.usersService.join(data.email, data.nickname, data.password);
   }
 
   @ApiOkResponse({ description: '성공', type: UserDto })
