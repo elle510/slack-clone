@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
@@ -17,7 +21,7 @@ export class UsersService {
 
     if (user) {
       // 이미 존재하는 유저라서 에러
-      throw new HttpException('이미 존재하는 사용자 입니다.', 401);
+      throw new UnauthorizedException('이미 존재하는 사용자 입니다.'); // errorCode: 401 자동으로 붙음
     }
     const hashedPassword = await bcrypt.hash(password, 12);
     await this.userRepository.save({
