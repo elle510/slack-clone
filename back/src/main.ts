@@ -13,6 +13,12 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
+  // 컨트롤러에서 ParseIntPipe 등 안써도 타입변환 해주는 설정
+  // app.useGlobalPipes(
+  //   new ValidationPipe({
+  //     transform: true,
+  //   }),
+  // );
 
   const config = new DocumentBuilder()
     .setTitle('Slack API')
