@@ -43,12 +43,17 @@ export class WorkspacesService {
     const workspaceMember = new WorkspaceMembers();
     workspaceMember.UserId = myId;
     workspaceMember.WorkspaceId = returned.id;
-    await this.workspaceMembersRepository.save(workspaceMember);
+    // await this.workspaceMembersRepository.save(workspaceMember);
 
     const channel = new Channels();
     channel.name = '일반';
     channel.WorkspaceId = returned.id;
-    const channelReturned = await this.channelsRepository.save(channel);
+    // const channelReturned = await this.channelsRepository.save(channel);
+
+    const [, channelReturned] = await Promise.all([
+      this.workspaceMembersRepository.save(workspaceMember),
+      this.channelsRepository.save(channel),
+    ]);
 
     const channelMember = new ChannelMembers();
     channelMember.UserId = myId;
