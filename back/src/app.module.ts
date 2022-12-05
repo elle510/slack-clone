@@ -48,7 +48,7 @@ import { AuthModule } from './auth/auth.module';
       // entities: ['entities/*.ts'],
       // autoLoadEntities: true,
       synchronize: false,
-      logging: true,
+      logging: true, // process.env.NODE_ENV !== 'production',
       keepConnectionAlive: true, // TODO: deprecated 됨
       charset: 'utf8mb4', // 이모티콘 사용을 위해
     }),
