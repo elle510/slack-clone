@@ -34,6 +34,7 @@ export class WorkspacesService {
 
   async createWorkspace(name: string, url: string, myId: number) {
     console.log('createWorkspace', name, url, myId);
+    // TODO: transaction 으로 리펙토링 해보자
     const workspace = new Workspaces();
     workspace.name = name;
     workspace.url = url;
@@ -74,6 +75,7 @@ export class WorkspacesService {
   async createWorkspaceMembers(url, email) {
     const workspace = await this.workspacesRepository.findOne({
       where: { url },
+      // relations: ['channels'], // 아래 join 과 동일
       join: {
         alias: 'workspace',
         innerJoinAndSelect: {
@@ -81,6 +83,12 @@ export class WorkspacesService {
         },
       },
     });
+    // query builder 로 작성
+    // this.workspacesRepository
+    //   .createQueryBuilder('workspace')
+    //   .innerJoinAndSelect('workspace.Channels', 'channels')
+    //   .getOne();
+
     const user = await this.usersRepository.findOne({ where: { email } });
     if (!user) {
       return null;
