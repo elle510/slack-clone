@@ -19,6 +19,7 @@ import { Users } from './entities/Users';
 import { WorkspaceMembers } from './entities/WorkspaceMembers';
 import { Workspaces } from './entities/Workspaces';
 import { AuthModule } from './auth/auth.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AuthModule } from './auth/auth.module';
       keepConnectionAlive: true, // TODO: deprecated 됨
       charset: 'utf8mb4', // 이모티콘 사용을 위해
     }),
+    EventsModule,
     // TypeOrmModule.forFeature([Users]), // autoLoadEntities: true 하면 여기서 설정한 entities 을 읽어온다.
   ],
   controllers: [AppController],
