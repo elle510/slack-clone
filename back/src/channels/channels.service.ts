@@ -7,6 +7,7 @@ import { Channels } from 'src/entities/Channels';
 import { Workspaces } from 'src/entities/Workspaces';
 import { ChannelChats } from 'src/entities/ChannelChats';
 import { Users } from 'src/entities/Users';
+import { EventsGateway } from 'src/events/events.gateway';
 
 @Injectable()
 export class ChannelsService {
@@ -20,7 +21,8 @@ export class ChannelsService {
     @InjectRepository(ChannelChats)
     private channelChatsRepository: Repository<ChannelChats>,
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>, // private readonly eventsGateway: EventsGateway,
+    private usersRepository: Repository<Users>,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async findById(id: number) {
@@ -169,42 +171,45 @@ export class ChannelsService {
     });
 
     // socket.io 로 워크스페이스+채널 사용자에게 전송
-    // this.eventsGateway.server
-    //   // .of(`/ws-${url}`)
-    //   .to(`/ws-${url}-${chatWithUser.ChannelId}`)
-    //   .emit('message', chatWithUser);
+    // TODO: join() 없이 to() 한 것은 알아보자.
+    this.eventsGateway.server
+      // .of(`/ws-${url}`)
+      .to(`/ws-${url}-${chatWithUser.ChannelId}`)
+      .emit('message', chatWithUser);
   }
 
-  // async createWorkspaceChannelImages(
-  //   url: string,
-  //   name: string,
-  //   files: Express.Multer.File[],
-  //   myId: number,
-  // ) {
-  //   console.log(files);
-  //   const channel = await this.channelsRepository
-  //     .createQueryBuilder('channel')
-  //     .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
-  //       url,
-  //     })
-  //     .where('channel.name = :name', { name })
-  //     .getOne();
-  //   for (let i = 0; i < files.length; i++) {
-  //     const chats = new ChannelChats();
-  //     chats.content = files[i].path;
-  //     chats.UserId = myId;
-  //     chats.ChannelId = channel.id;
-  //     const savedChat = await this.channelChatsRepository.save(chats);
-  //     const chatWithUser = await this.channelChatsRepository.findOne({
-  //       where: { id: savedChat.id },
-  //       relations: ['User', 'Channel'],
-  //     });
-  //     this.eventsGateway.server
-  //       // .of(`/ws-${url}`)
-  //       .to(`/ws-${url}-${chatWithUser.ChannelId}`)
-  //       .emit('message', chatWithUser);
-  //   }
-  // }
+  async createWorkspaceChannelImages(
+    url: string,
+    name: string,
+    files: string[], // Express.Multer.File[],
+    myId: number,
+  ) {
+    console.log(files);
+    const channel = await this.channelsRepository
+      .createQueryBuilder('channel')
+      .innerJoin('channel.Workspace', 'workspace', 'workspace.url = :url', {
+        url,
+      })
+      .where('channel.name = :name', { name })
+      .getOne();
+    for (let i = 0; i < files.length; i++) {
+      const chats = new ChannelChats();
+      // chats.content = files[i].path;
+      chats.UserId = myId;
+      chats.ChannelId = channel.id;
+      const savedChat = await this.channelChatsRepository.save(chats);
+      const chatWithUser = await this.channelChatsRepository.findOne({
+        where: { id: savedChat.id },
+        relations: ['User', 'Channel'],
+      });
+
+      // TODO: join() 없이 to() 한 것은 알아보자.
+      this.eventsGateway.server
+        // .of(`/ws-${url}`)
+        .to(`/ws-${url}-${chatWithUser.ChannelId}`)
+        .emit('message', chatWithUser);
+    }
+  }
 
   async getChannelUnreadsCount(url, name, after) {
     const channel = await this.channelsRepository

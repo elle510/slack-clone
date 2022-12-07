@@ -83,21 +83,21 @@ export class ChannelsController {
     );
   }
 
-  // @ApiOperation({ summary: '워크스페이스 특정 채널 채팅 생성하기' })
-  // @Post(':name/chats')
-  // async postChats(
-  //   @Param('url') url: string,
-  //   @Param('name') name: string,
-  //   @Body('content') content: string,
-  //   @User() user: Users,
-  // ) {
-  //   return this.channelsService.createWorkspaceChannelChats(
-  //     url,
-  //     name,
-  //     content,
-  //     user.id,
-  //   );
-  // }
+  @ApiOperation({ summary: '워크스페이스 특정 채널 채팅 생성하기' })
+  @Post(':name/chats')
+  async postChats(
+    @Param('url') url: string,
+    @Param('name') name: string,
+    @Body('content') content: string,
+    @User() user: Users,
+  ) {
+    return this.channelsService.createWorkspaceChannelChats(
+      url,
+      name,
+      content,
+      user.id,
+    );
+  }
 
   // @ApiOperation({ summary: '워크스페이스 특정 채널 이미지 업로드하기' })
   // @UseInterceptors(
@@ -129,13 +129,13 @@ export class ChannelsController {
   //   );
   // }
 
-  // @ApiOperation({ summary: '안 읽은 개수 가져오기' })
-  // @Get(':url/channels/:name/unreads')
-  // async getUnreads(
-  //   @Param('url') url,
-  //   @Param('name') name,
-  //   @Query('after', ParseIntPipe) after: number,
-  // ) {
-  //   return this.channelsService.getChannelUnreadsCount(url, name, after);
-  // }
+  @ApiOperation({ summary: '안 읽은 개수 가져오기' })
+  @Get(':name/unreads')
+  async getUnreads(
+    @Param('url') url,
+    @Param('name') name,
+    @Query('after', ParseIntPipe) after: number,
+  ) {
+    return this.channelsService.getChannelUnreadsCount(url, name, after);
+  }
 }

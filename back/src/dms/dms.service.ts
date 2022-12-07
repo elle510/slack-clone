@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DMs } from 'src/entities/DMs';
 import { Users } from 'src/entities/Users';
 import { Workspaces } from 'src/entities/Workspaces';
+import { EventsGateway } from 'src/events/events.gateway';
 import { onlineMap } from 'src/events/onlineMap';
 import { MoreThan, Repository } from 'typeorm';
 
@@ -16,7 +17,8 @@ export class DmsService {
     @InjectRepository(Workspaces)
     private workspacesRepository: Repository<Workspaces>,
     @InjectRepository(DMs) private dmsRepository: Repository<DMs>,
-    @InjectRepository(Users) private usersRepository: Repository<Users>, // private readonly eventsGateway: EventsGateway,
+    @InjectRepository(Users) private usersRepository: Repository<Users>,
+    private readonly eventsGateway: EventsGateway,
   ) {}
 
   async getWorkspaceDMs(url: string, myId: number) {
@@ -73,41 +75,43 @@ export class DmsService {
       relations: ['Sender'],
     });
 
-    // socket.io 로 전송
-    // const receiverSocketId = getKeyByValue(
-    //   onlineMap[`/ws-${workspace.url}`],
-    //   Number(id),
-    // );
-    // this.eventsGateway.server.to(receiverSocketId).emit('dm', dmWithSender);
+    // socket.io 전송
+    const receiverSocketId = getKeyByValue(
+      onlineMap[`/ws-${workspace.url}`],
+      Number(id),
+    );
+    this.eventsGateway.server.to(receiverSocketId).emit('dm', dmWithSender);
   }
 
-  // async createWorkspaceDMImages(
-  //   url: string,
-  //   files: Express.Multer.File[],
-  //   id: number,
-  //   myId: number,
-  // ) {
-  //   const workspace = await this.workspacesRepository.findOne({
-  //     where: { url },
-  //   });
-  //   for (let i = 0; i < files.length; i++) {
-  //     const dm = new DMs();
-  //     dm.SenderId = myId;
-  //     dm.ReceiverId = id;
-  //     dm.content = files[i].path;
-  //     dm.WorkspaceId = workspace.id;
-  //     const savedDm = await this.dmsRepository.save(dm);
-  //     const dmWithSender = await this.dmsRepository.findOne({
-  //       where: { id: savedDm.id },
-  //       relations: ['Sender'],
-  //     });
-  //     const receiverSocketId = getKeyByValue(
-  //       onlineMap[`/ws-${workspace.url}`],
-  //       Number(id),
-  //     );
-  //     this.eventsGateway.server.to(receiverSocketId).emit('dm', dmWithSender);
-  //   }
-  // }
+  async createWorkspaceDMImages(
+    url: string,
+    files: string[], // Express.Multer.File[],
+    id: number,
+    myId: number,
+  ) {
+    const workspace = await this.workspacesRepository.findOne({
+      where: { url },
+    });
+    for (let i = 0; i < files.length; i++) {
+      const dm = new DMs();
+      dm.SenderId = myId;
+      dm.ReceiverId = id;
+      // dm.content = files[i].path;
+      dm.WorkspaceId = workspace.id;
+      const savedDm = await this.dmsRepository.save(dm);
+      const dmWithSender = await this.dmsRepository.findOne({
+        where: { id: savedDm.id },
+        relations: ['Sender'],
+      });
+
+      // socket.io 전송
+      const receiverSocketId = getKeyByValue(
+        onlineMap[`/ws-${workspace.url}`],
+        Number(id),
+      );
+      this.eventsGateway.server.to(receiverSocketId).emit('dm', dmWithSender);
+    }
+  }
 
   async getDMUnreadsCount(url, id, myId, after) {
     const workspace = await this.workspacesRepository.findOne({
