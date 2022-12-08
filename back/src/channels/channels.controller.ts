@@ -127,7 +127,7 @@ export class ChannelsController {
       limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
     }),
   )
-  @Post(':url/channels/:name/images')
+  @Post(':name/images')
   async createWorkspaceChannelImages(
     @Param('url') url: string,
     @Param('name') name: string,
