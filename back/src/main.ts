@@ -21,6 +21,17 @@ async function bootstrap() {
   //     transform: true,
   //   }),
   // );
+  if (process.env.NODE_ENV === 'production') {
+    app.enableCors({
+      origin: ['https://slack.mydomain.com'],
+      credentials: true,
+    });
+  } else {
+    app.enableCors({
+      origin: true,
+      credentials: true,
+    });
+  }
 
   app.useStaticAssets(
     process.env.NODE_ENV === 'production'
