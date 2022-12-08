@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { query } from 'express';
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';

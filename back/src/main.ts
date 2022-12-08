@@ -6,11 +6,13 @@ import session from 'express-session';
 
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './http-exception.filter';
+import path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 declare const module: any;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
   // 컨트롤러에서 ParseIntPipe 등 안써도 타입변환 해주는 설정
@@ -19,6 +21,24 @@ async function bootstrap() {
   //     transform: true,
   //   }),
   // );
+
+  app.useStaticAssets(
+    process.env.NODE_ENV === 'production'
+      ? path.join(__dirname, '..', '..', 'uploads')
+      : path.join(__dirname, '..', 'uploads'),
+    {
+      prefix: '/uploads',
+    },
+  );
+
+  app.useStaticAssets(
+    process.env.NODE_ENV === 'production'
+      ? path.join(__dirname, '..', '..', 'public')
+      : path.join(__dirname, '..', 'public'),
+    {
+      prefix: '/dist',
+    },
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Slack API')
