@@ -85,7 +85,7 @@ export class DmsService {
 
   async createWorkspaceDMImages(
     url: string,
-    files: string[], // Express.Multer.File[],
+    files: Express.Multer.File[],
     id: number,
     myId: number,
   ) {
@@ -96,7 +96,7 @@ export class DmsService {
       const dm = new DMs();
       dm.SenderId = myId;
       dm.ReceiverId = id;
-      // dm.content = files[i].path;
+      dm.content = files[i].path;
       dm.WorkspaceId = workspace.id;
       const savedDm = await this.dmsRepository.save(dm);
       const dmWithSender = await this.dmsRepository.findOne({

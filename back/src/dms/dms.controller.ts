@@ -6,13 +6,27 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import fs from 'fs';
+import multer from 'multer';
+import path from 'path';
+
 import { User } from 'src/common/decorators/user.decorator';
 import { Users } from 'src/entities/Users';
 import { DmsService } from './dms.service';
 
-@ApiTags('DM')
+try {
+  fs.readdirSync('uploads');
+} catch (error) {
+  console.error('uploads 폴더가 없어 uploads 폴더를 생성합니다.');
+  fs.mkdirSync('uploads');
+}
+
+@ApiTags('DMS')
 // 컨트롤러 이름이 url 과 꼭 일치시킬 필요는 없음 - 필요에 따라 url 정해주면 됨
 @Controller('api/workspaces/:url/dms')
 export class DmsController {
@@ -59,30 +73,30 @@ export class DmsController {
     return this.dmsService.createWorkspaceDMChats(url, content, id, user.id);
   }
 
-  // @ApiOperation({ summary: '워크스페이스 특정 DM 이미지 업로드하기' })
-  // @UseInterceptors(
-  //   FilesInterceptor('image', 10, {
-  //     storage: multer.diskStorage({
-  //       destination(req, file, cb) {
-  //         cb(null, 'uploads/');
-  //       },
-  //       filename(req, file, cb) {
-  //         const ext = path.extname(file.originalname);
-  //         cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
-  //       },
-  //     }),
-  //     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  //   }),
-  // )
-  // @Post(':id/images')
-  // async createWorkspaceDMImages(
-  //   @Param('url') url,
-  //   @Param('id', ParseIntPipe) id: number,
-  //   @UploadedFiles() files: Express.Multer.File[],
-  //   @User() user: Users,
-  // ) {
-  //   return this.dmsService.createWorkspaceDMImages(url, files, id, user.id);
-  // }
+  @ApiOperation({ summary: '워크스페이스 특정 DM 이미지 업로드하기' })
+  @UseInterceptors(
+    FilesInterceptor('image', 10, {
+      storage: multer.diskStorage({
+        destination(req, file, cb) {
+          cb(null, 'uploads/');
+        },
+        filename(req, file, cb) {
+          const ext = path.extname(file.originalname);
+          cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+        },
+      }),
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    }),
+  )
+  @Post(':id/images')
+  async createWorkspaceDMImages(
+    @Param('url') url,
+    @Param('id', ParseIntPipe) id: number,
+    @UploadedFiles() files: Express.Multer.File[],
+    @User() user: Users,
+  ) {
+    return this.dmsService.createWorkspaceDMImages(url, files, id, user.id);
+  }
 
   @ApiOperation({ summary: '안 읽은 개수 가져오기' })
   @Get(':id/unreads')

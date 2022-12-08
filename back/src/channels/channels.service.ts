@@ -181,7 +181,7 @@ export class ChannelsService {
   async createWorkspaceChannelImages(
     url: string,
     name: string,
-    files: string[], // Express.Multer.File[],
+    files: Express.Multer.File[],
     myId: number,
   ) {
     console.log(files);
@@ -194,7 +194,7 @@ export class ChannelsService {
       .getOne();
     for (let i = 0; i < files.length; i++) {
       const chats = new ChannelChats();
-      // chats.content = files[i].path;
+      chats.content = files[i].path;
       chats.UserId = myId;
       chats.ChannelId = channel.id;
       const savedChat = await this.channelChatsRepository.save(chats);
