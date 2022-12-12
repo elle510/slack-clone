@@ -3,25 +3,32 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-// import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource /* , Repository */ } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import bcrypt from 'bcrypt';
 
 import { Users } from '../entities/Users';
-import { WorkspaceMembers } from 'src/entities/WorkspaceMembers';
-import { ChannelMembers } from 'src/entities/ChannelMembers';
+import { WorkspaceMembers } from '../entities/WorkspaceMembers';
+import { ChannelMembers } from '../entities/ChannelMembers';
 
 @Injectable()
 export class UsersService {
   constructor(
     // queryRunner 사용으로 필요없어졌음
-    // @InjectRepository(Users) private userRepository: Repository<Users>,
+    @InjectRepository(Users) private usersRepository: Repository<Users>,
     // @InjectRepository(WorkspaceMembers)
     // private workspaceMembersRepository: Repository<WorkspaceMembers>,
     // @InjectRepository(ChannelMembers)
     // private channelMembersRepository: Repository<ChannelMembers>,
     private dataSource: DataSource,
   ) {}
+
+  async findByEmail(email: string) {
+    return this.usersRepository.findOne({
+      where: { email },
+      select: ['id', 'email', 'password'],
+    });
+  }
 
   async join(email: string, nickname: string, password: string) {
     console.log('email, nickname, password:', email, nickname, password);
